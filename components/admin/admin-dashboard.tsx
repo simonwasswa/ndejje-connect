@@ -95,36 +95,20 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
       actions: ["View Pending", "Respond", "Archive"],
     },
     {
-      id: "events",
-      title: "Event Management",
-      description: "Create, edit, and manage university events",
+      id: "content-management",
+      title: "Content Management",
+      description: "Create and manage events, announcements, and content",
       icon: Calendar,
       count: systemStats.totalEvents,
-      actions: ["Create Event", "Edit Events", "View Calendar"],
+      actions: ["Create Event", "Edit Events", "Manage Announcements"],
     },
     {
-      id: "announcements",
-      title: "Announcement Management",
-      description: "Publish and manage guild announcements",
-      icon: Megaphone,
-      count: systemStats.totalAnnouncements,
-      actions: ["Create Post", "Edit Posts", "Manage Categories"],
-    },
-    {
-      id: "guild",
+      id: "member-management",
       title: "Guild Management",
       description: "Manage guild members and council structure",
       icon: Shield,
       count: systemStats.guildMembers,
       actions: ["Add Member", "Edit Roles", "Manage Permissions"],
-    },
-    {
-      id: "system",
-      title: "System Settings",
-      description: "Configure system settings and preferences",
-      icon: Settings,
-      count: "Active",
-      actions: ["General Settings", "User Permissions", "System Logs"],
     },
   ]
 
@@ -159,83 +143,89 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
   }
 
   return (
-    <div className="p-6">
-      <div className="border-2 border-purple-300 rounded-xl p-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="p-3 sm:p-4 lg:p-6">
+      <div className="border-2 border-purple-300 rounded-xl p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 lg:mb-6 space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-            <p className="text-gray-600">Complete system management and control panel</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600 text-sm lg:text-base">Complete system management and control panel</p>
             <Badge className="mt-2 bg-red-100 text-red-800">Administrator Access</Badge>
           </div>
-          <div className="flex items-center space-x-2 mt-4 md:mt-0">
-            <Button className="bg-purple-700 hover:bg-purple-800">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
+            <Button className="bg-purple-700 hover:bg-purple-800 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Quick Actions
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               <Settings className="w-4 h-4 mr-2" />
               System Settings
             </Button>
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">System Overview</TabsTrigger>
-            <TabsTrigger value="management">Management Tools</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics & Reports</TabsTrigger>
+            <TabsTrigger value="overview" className="text-xs sm:text-sm">
+              System Overview
+            </TabsTrigger>
+            <TabsTrigger value="management" className="text-xs sm:text-sm">
+              Management Tools
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm">
+              Analytics & Reports
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-4 lg:space-y-6">
             {/* System Stats */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
               <Card>
-                <CardContent className="p-4 text-center">
-                  <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">{systemStats.totalStudents}</div>
-                  <div className="text-sm text-gray-600">Total Students</div>
+                <CardContent className="p-3 lg:p-4 text-center">
+                  <Users className="w-6 h-6 lg:w-8 lg:h-8 text-blue-600 mx-auto mb-2" />
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{systemStats.totalStudents}</div>
+                  <div className="text-xs lg:text-sm text-gray-600">Total Students</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
-                  <MessageSquare className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">{systemStats.pendingInquiries}</div>
-                  <div className="text-sm text-gray-600">Pending Inquiries</div>
+                <CardContent className="p-3 lg:p-4 text-center">
+                  <MessageSquare className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-600 mx-auto mb-2" />
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{systemStats.pendingInquiries}</div>
+                  <div className="text-xs lg:text-sm text-gray-600">Pending Inquiries</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
-                  <Calendar className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">{systemStats.totalEvents}</div>
-                  <div className="text-sm text-gray-600">Active Events</div>
+                <CardContent className="p-3 lg:p-4 text-center">
+                  <Calendar className="w-6 h-6 lg:w-8 lg:h-8 text-purple-600 mx-auto mb-2" />
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{systemStats.totalEvents}</div>
+                  <div className="text-xs lg:text-sm text-gray-600">Active Events</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
-                  <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">{systemStats.systemUptime}</div>
-                  <div className="text-sm text-gray-600">System Uptime</div>
+                <CardContent className="p-3 lg:p-4 text-center">
+                  <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 text-green-600 mx-auto mb-2" />
+                  <div className="text-xl lg:text-2xl font-bold text-gray-900">{systemStats.systemUptime}</div>
+                  <div className="text-xs lg:text-sm text-gray-600">System Uptime</div>
                 </CardContent>
               </Card>
             </div>
 
             {/* Recent Activities */}
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-2 gap-4 lg:gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent System Activities</CardTitle>
+                  <CardTitle className="text-lg lg:text-xl">Recent System Activities</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-3 lg:space-y-4">
                     {recentActivities.map((activity) => (
                       <div
                         key={activity.id}
                         className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg"
                       >
                         {getActivityIcon(activity.type)}
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">{activity.title}</h4>
-                          <p className="text-sm text-gray-600">{activity.description}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm lg:text-base">{activity.title}</h4>
+                          <p className="text-xs lg:text-sm text-gray-600 truncate">{activity.description}</p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-gray-500">
                               by {activity.user} • {activity.time}
@@ -253,33 +243,41 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle className="text-lg lg:text-xl">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3">
                     <Button
                       variant="outline"
-                      className="h-20 flex flex-col items-center justify-center"
-                      onClick={() => setActiveSection("member-management")}
+                      className="h-16 lg:h-20 flex flex-col items-center justify-center"
+                      onClick={() => setActiveSection?.("member-management")}
                     >
-                      <Plus className="w-6 h-6 mb-2" />
-                      <span className="text-sm">Manage Members</span>
+                      <Plus className="w-5 h-5 lg:w-6 lg:h-6 mb-1 lg:mb-2" />
+                      <span className="text-xs lg:text-sm">Manage Members</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-20 flex flex-col items-center justify-center"
-                      onClick={() => setActiveSection("content-management")}
+                      className="h-16 lg:h-20 flex flex-col items-center justify-center"
+                      onClick={() => setActiveSection?.("content-management")}
                     >
-                      <Megaphone className="w-6 h-6 mb-2" />
-                      <span className="text-sm">Manage Content</span>
+                      <Megaphone className="w-5 h-5 lg:w-6 lg:h-6 mb-1 lg:mb-2" />
+                      <span className="text-xs lg:text-sm">Manage Content</span>
                     </Button>
-                    <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                      <Calendar className="w-6 h-6 mb-2" />
-                      <span className="text-sm">Create Event</span>
+                    <Button
+                      variant="outline"
+                      className="h-16 lg:h-20 flex flex-col items-center justify-center"
+                      onClick={() => setActiveSection?.("students")}
+                    >
+                      <Users className="w-5 h-5 lg:w-6 lg:h-6 mb-1 lg:mb-2" />
+                      <span className="text-xs lg:text-sm">View Students</span>
                     </Button>
-                    <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                      <MessageSquare className="w-6 h-6 mb-2" />
-                      <span className="text-sm">Review Inquiries</span>
+                    <Button
+                      variant="outline"
+                      className="h-16 lg:h-20 flex flex-col items-center justify-center"
+                      onClick={() => setActiveSection?.("inquiries")}
+                    >
+                      <MessageSquare className="w-5 h-5 lg:w-6 lg:h-6 mb-1 lg:mb-2" />
+                      <span className="text-xs lg:text-sm">Review Inquiries</span>
                     </Button>
                   </div>
                 </CardContent>
@@ -287,28 +285,31 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
             </div>
           </TabsContent>
 
-          <TabsContent value="management" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <TabsContent value="management" className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4 lg:gap-6">
               {managementSections.map((section) => {
                 const Icon = section.icon
                 return (
                   <Card key={section.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <Icon className="w-8 h-8 text-purple-600" />
+                        <Icon className="w-6 h-6 lg:w-8 lg:h-8 text-purple-600" />
                         <Badge variant="outline">{section.count}</Badge>
                       </div>
-                      <CardTitle className="text-lg">{section.title}</CardTitle>
-                      <p className="text-sm text-gray-600">{section.description}</p>
+                      <CardTitle className="text-lg lg:text-xl">{section.title}</CardTitle>
+                      <p className="text-xs lg:text-sm text-gray-600">{section.description}</p>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {section.actions.map((action, index) => (
-                          <Button key={index} variant="outline" size="sm" className="w-full justify-start">
-                            <Edit className="w-4 h-4 mr-2" />
-                            {action}
-                          </Button>
-                        ))}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full justify-start"
+                          onClick={() => setActiveSection?.(section.id)}
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Manage {section.title.split(" ")[0]}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -317,29 +318,29 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
             </div>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+          <TabsContent value="analytics" className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>User Engagement</CardTitle>
+                  <CardTitle className="text-lg lg:text-xl">User Engagement</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-3 lg:space-y-4">
                     <div className="flex justify-between items-center">
-                      <span>Active Users Today</span>
-                      <span className="font-bold">{systemStats.activeUsers}</span>
+                      <span className="text-sm lg:text-base">Active Users Today</span>
+                      <span className="font-bold text-sm lg:text-base">{systemStats.activeUsers}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Total Inquiries This Month</span>
-                      <span className="font-bold">{systemStats.totalInquiries}</span>
+                      <span className="text-sm lg:text-base">Total Inquiries This Month</span>
+                      <span className="font-bold text-sm lg:text-base">{systemStats.totalInquiries}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Events This Semester</span>
-                      <span className="font-bold">{systemStats.totalEvents}</span>
+                      <span className="text-sm lg:text-base">Events This Semester</span>
+                      <span className="font-bold text-sm lg:text-base">{systemStats.totalEvents}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>System Response Time</span>
-                      <span className="font-bold text-green-600">&lt; 200ms</span>
+                      <span className="text-sm lg:text-base">System Response Time</span>
+                      <span className="font-bold text-green-600 text-sm lg:text-base">&lt; 200ms</span>
                     </div>
                   </div>
                 </CardContent>
@@ -347,25 +348,25 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>System Health</CardTitle>
+                  <CardTitle className="text-lg lg:text-xl">System Health</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-3 lg:space-y-4">
                     <div className="flex justify-between items-center">
-                      <span>Database Status</span>
+                      <span className="text-sm lg:text-base">Database Status</span>
                       <Badge className="bg-green-100 text-green-800">Healthy</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Server Load</span>
+                      <span className="text-sm lg:text-base">Server Load</span>
                       <Badge className="bg-blue-100 text-blue-800">Normal</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Storage Usage</span>
-                      <span className="font-bold">65%</span>
+                      <span className="text-sm lg:text-base">Storage Usage</span>
+                      <span className="font-bold text-sm lg:text-base">65%</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Last Backup</span>
-                      <span className="font-bold">2 hours ago</span>
+                      <span className="text-sm lg:text-base">Last Backup</span>
+                      <span className="font-bold text-sm lg:text-base">2 hours ago</span>
                     </div>
                   </div>
                 </CardContent>
@@ -375,12 +376,12 @@ export function AdminDashboard({ setActiveSection }: AdminDashboardProps) {
         </Tabs>
 
         {/* System Alert */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mt-6 lg:mt-8 p-3 lg:p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-blue-900">Administrator Privileges Active</h3>
+            <Shield className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" />
+            <h3 className="font-semibold text-blue-900 text-sm lg:text-base">Administrator Privileges Active</h3>
           </div>
-          <p className="text-blue-800 text-sm mt-1">
+          <p className="text-blue-800 text-xs lg:text-sm mt-1">
             You have full system access. All actions are logged for security purposes.
           </p>
         </div>

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Edit, Trash2, Search, Filter, Users, UserPlus, Mail, Phone, MapPin, Save, X } from "lucide-react"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 export function MemberManagement() {
   const [members, setMembers] = useState([
@@ -65,6 +66,8 @@ export function MemberManagement() {
     office: "",
     responsibilities: "",
     status: "active",
+    bio: "",
+    image: "/placeholder.svg?height=100&width=100",
   })
 
   const positions = [
@@ -113,6 +116,8 @@ export function MemberManagement() {
         office: "",
         responsibilities: "",
         status: "active",
+        bio: "",
+        image: "/placeholder.svg?height=100&width=100",
       })
       setIsAddingMember(false)
     }
@@ -291,6 +296,15 @@ export function MemberManagement() {
                       />
                     </div>
                   </div>
+                  <div className="md:col-span-2">
+                    <ImageUpload
+                      currentImage={newMember.image}
+                      onImageChange={(imageUrl) => setNewMember({ ...newMember, image: imageUrl })}
+                      label="Member Photo"
+                      aspectRatio="square"
+                      className="mt-4"
+                    />
+                  </div>
                   <div className="flex flex-col md:flex-row gap-2 mt-4">
                     <Button onClick={handleAddMember} className="bg-green-700 hover:bg-green-800">
                       <Save className="w-4 h-4 mr-2" />
@@ -385,6 +399,9 @@ function MemberCard({
     phone: member.phone,
     office: member.office,
     responsibilities: member.responsibilities.join(", "),
+    bio: member.bio || "",
+    status: member.status,
+    image: member.image || "",
   })
 
   if (isEditing) {
@@ -435,6 +452,16 @@ function MemberCard({
               value={editData.phone}
               onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
               className="text-sm"
+            />
+          </div>
+          <div>
+            <Label>Photo</Label>
+            <ImageUpload
+              currentImage={editData.image}
+              onImageChange={(imageUrl) => setEditData({ ...editData, image: imageUrl })}
+              label=""
+              aspectRatio="square"
+              className="mt-1"
             />
           </div>
           <div className="flex flex-col sm:flex-row gap-2">

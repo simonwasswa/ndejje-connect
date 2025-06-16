@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { GraduationCap, Eye, EyeOff, AlertCircle } from "lucide-react"
 
 interface LoginProps {
-  onLogin: (user: any) => void
+  onLogin?: (user: any) => void
 }
 
 export function Login({ onLogin }: LoginProps) {
@@ -93,7 +93,7 @@ export function Login({ onLogin }: LoginProps) {
       if (user) {
         // Remove password from user object before storing
         const { password, ...userWithoutPassword } = user
-        onLogin(userWithoutPassword)
+        onLogin?.(userWithoutPassword)
       } else {
         setError("Invalid email or password")
       }
@@ -108,7 +108,7 @@ export function Login({ onLogin }: LoginProps) {
     const demoUser = mockUsers.find((u) => u.role === userType)
     if (demoUser) {
       const { password, ...userWithoutPassword } = demoUser
-      onLogin(userWithoutPassword)
+      onLogin?.(userWithoutPassword)
     }
   }
 

@@ -1,467 +1,408 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Edit, Trash2, Megaphone, Calendar, FileText, X, Eye, Send } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { ImageUpload } from "@/components/ui/image-upload"
 
-export function ContentManagement() {
-  const [announcements, setAnnouncements] = useState([
+const announcementSchema = z.object({
+  title: z.string().min(2, {
+    message: "Title must be at least 2 characters.",
+  }),
+  content: z.string().min(10, {
+    message: "Content must be at least 10 characters.",
+  }),
+  author: z.string().min(2, {
+    message: "Author must be at least 2 characters.",
+  }),
+  category: z.string().min(2, {
+    message: "Category must be at least 2 characters.",
+  }),
+  priority: z.enum(["high", "medium", "low"]),
+  pinned: z.boolean().default(false),
+  image: z.string().optional(),
+})
+
+type Announcement = z.infer<typeof announcementSchema>
+
+const ContentManagement = () => {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([
     {
-      id: 1,
-      title: "Guild Election Nominations Now Open",
-      content: "We are excited to announce that nominations for the 2024 Guild Council elections are now open!",
-      author: "Admin",
-      date: "2024-03-30",
-      category: "Elections",
+      title: "Important Announcement",
+      content: "This is a very important announcement. Please read carefully.",
+      author: "John Doe",
+      category: "General",
       priority: "high",
-      status: "published",
+      pinned: true,
+      image: "",
     },
     {
-      id: 2,
-      title: "Library Hours Extended",
-      content: "Library will be open from 6:00 AM to 11:00 PM during exam period.",
-      author: "Admin",
-      date: "2024-03-29",
-      category: "Academic",
+      title: "New Feature Release",
+      content: "We are excited to announce the release of our new feature!",
+      author: "Jane Smith",
+      category: "Technology",
       priority: "medium",
-      status: "published",
+      pinned: false,
+      image: "",
     },
   ])
-
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Guild Elections 2024",
-      description: "Annual guild council elections",
-      date: "2024-04-15",
-      time: "9:00 AM",
-      location: "Main Auditorium",
-      category: "Elections",
-      status: "upcoming",
-    },
-    {
-      id: 2,
-      title: "Career Fair 2024",
-      description: "Meet with potential employers",
-      date: "2024-04-08",
-      time: "10:00 AM",
-      location: "Sports Complex",
-      category: "Career",
-      status: "upcoming",
-    },
-  ])
-
-  const [activeTab, setActiveTab] = useState("announcements")
-  const [isCreating, setIsCreating] = useState(false)
-  const [editingId, setEditingId] = useState<number | null>(null)
 
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: "",
     content: "",
+    author: "",
     category: "",
     priority: "medium",
+    pinned: false,
+    image: "",
   })
 
-  const [newEvent, setNewEvent] = useState({
+  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement>({
     title: "",
-    description: "",
-    date: "",
-    time: "",
-    location: "",
+    content: "",
+    author: "",
     category: "",
+    priority: "medium",
+    pinned: false,
+    image: "",
+  })
+  const [openEditModal, setOpenEditModal] = useState(false)
+  const [announcementToDelete, setAnnouncementToDelete] = useState<Announcement | null>(null)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+
+  const form = useForm<z.infer<typeof announcementSchema>>({
+    resolver: zodResolver(announcementSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      author: "",
+      category: "",
+      priority: "medium",
+      pinned: false,
+      image: "",
+    },
   })
 
-  const categories = ["Elections", "Academic", "Sports", "Cultural", "Wellness", "Financial", "General"]
-  const priorities = ["low", "medium", "high"]
+  function onSubmit(values: z.infer<typeof announcementSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values)
+  }
 
   const handleCreateAnnouncement = () => {
-    if (newAnnouncement.title && newAnnouncement.content) {
-      const announcement = {
-        id: Date.now(),
-        ...newAnnouncement,
-        author: "Admin",
-        date: new Date().toISOString().split("T")[0],
-        status: "published",
-      }
-      setAnnouncements([announcement, ...announcements])
-      setNewAnnouncement({ title: "", content: "", category: "", priority: "medium" })
-      setIsCreating(false)
-    }
+    setAnnouncements([...announcements, newAnnouncement])
+    setNewAnnouncement({
+      title: "",
+      content: "",
+      author: "",
+      category: "",
+      priority: "medium",
+      pinned: false,
+      image: "",
+    })
   }
 
-  const handleCreateEvent = () => {
-    if (newEvent.title && newEvent.date && newEvent.time) {
-      const event = {
-        id: Date.now(),
-        ...newEvent,
-        status: "upcoming",
-      }
-      setEvents([event, ...events])
-      setNewEvent({ title: "", description: "", date: "", time: "", location: "", category: "" })
-      setIsCreating(false)
-    }
+  const handleEditAnnouncement = () => {
+    setAnnouncements(
+      announcements.map((announcement) =>
+        announcement.title === editingAnnouncement.title ? editingAnnouncement : announcement,
+      ),
+    )
+    setOpenEditModal(false)
+    setEditingAnnouncement({
+      title: "",
+      content: "",
+      author: "",
+      category: "",
+      priority: "medium",
+      pinned: false,
+      image: "",
+    })
   }
 
-  const handleDeleteAnnouncement = (id: number) => {
-    if (confirm("Are you sure you want to delete this announcement?")) {
-      setAnnouncements(announcements.filter((a) => a.id !== id))
+  const handleDeleteAnnouncement = () => {
+    if (announcementToDelete) {
+      setAnnouncements(announcements.filter((announcement) => announcement.title !== announcementToDelete.title))
+      setOpenDeleteModal(false)
+      setAnnouncementToDelete(null)
     }
-  }
-
-  const handleDeleteEvent = (id: number) => {
-    if (confirm("Are you sure you want to delete this event?")) {
-      setEvents(events.filter((e) => e.id !== id))
-    }
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800"
-      case "medium":
-        return "bg-yellow-100 text-yellow-800"
-      case "low":
-        return "bg-green-100 text-green-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      Elections: "bg-purple-100 text-purple-800",
-      Academic: "bg-blue-100 text-blue-800",
-      Sports: "bg-green-100 text-green-800",
-      Cultural: "bg-yellow-100 text-yellow-800",
-      Wellness: "bg-pink-100 text-pink-800",
-      Financial: "bg-red-100 text-red-800",
-      Career: "bg-indigo-100 text-indigo-800",
-      General: "bg-gray-100 text-gray-800",
-    }
-    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
   }
 
   return (
-    <div className="p-4 md:p-6">
-      <div className="border-2 border-purple-300 rounded-xl p-4 md:p-8">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 space-y-4 lg:space-y-0">
-          <div>
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Content Management</h1>
-            <p className="text-gray-600">Create and manage announcements, events, and content</p>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Content Management</h1>
+
+      {/* Create Announcement Form */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-2">Create Announcement</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Input
+            type="text"
+            placeholder="Title"
+            value={newAnnouncement.title}
+            onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
+          />
+          <Input
+            type="text"
+            placeholder="Author"
+            value={newAnnouncement.author}
+            onChange={(e) => setNewAnnouncement({ ...newAnnouncement, author: e.target.value })}
+          />
+          <Input
+            type="text"
+            placeholder="Category"
+            value={newAnnouncement.category}
+            onChange={(e) => setNewAnnouncement({ ...newAnnouncement, category: e.target.value })}
+          />
+          <Textarea
+            placeholder="Content"
+            value={newAnnouncement.content}
+            onChange={(e) => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
+            className="md:col-span-3"
+          />
+          <div className="md:col-span-2">
+            <ImageUpload
+              currentImage={newAnnouncement.image}
+              onImageChange={(imageUrl) => setNewAnnouncement({ ...newAnnouncement, image: imageUrl })}
+              label="Announcement Image (Optional)"
+              aspectRatio="landscape"
+              className="mt-4"
+            />
           </div>
-          <Button onClick={() => setIsCreating(true)} className="bg-purple-700 hover:bg-purple-800 w-full lg:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Content
+          <Select
+            onValueChange={(value) =>
+              setNewAnnouncement({ ...newAnnouncement, priority: value as "high" | "medium" | "low" })
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex items-center">
+            <Switch
+              id="pinned"
+              checked={newAnnouncement.pinned}
+              onCheckedChange={(checked) => setNewAnnouncement({ ...newAnnouncement, pinned: checked })}
+            />
+            <label
+              htmlFor="pinned"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2"
+            >
+              Pinned
+            </label>
+          </div>
+          <Button onClick={handleCreateAnnouncement} className="md:col-span-3">
+            Create Announcement
           </Button>
         </div>
+      </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="announcements">Announcements</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="announcements" className="space-y-6">
-            {/* Create Announcement Form */}
-            {isCreating && activeTab === "announcements" && (
-              <Card className="border-green-200 bg-green-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center">
-                      <Megaphone className="w-5 h-5 mr-2 text-green-600" />
-                      Create New Announcement
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={() => setIsCreating(false)}>
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="title">Title</Label>
-                    <Input
-                      id="title"
-                      value={newAnnouncement.title}
-                      onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
-                      placeholder="Enter announcement title"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="content">Content</Label>
-                    <Textarea
-                      id="content"
-                      rows={4}
-                      value={newAnnouncement.content}
-                      onChange={(e) => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
-                      placeholder="Enter announcement content"
-                    />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="category">Category</Label>
-                      <select
-                        value={newAnnouncement.category}
-                        onChange={(e) => setNewAnnouncement({ ...newAnnouncement, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      >
-                        <option value="">Select category</option>
-                        {categories.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <Label htmlFor="priority">Priority</Label>
-                      <select
-                        value={newAnnouncement.priority}
-                        onChange={(e) => setNewAnnouncement({ ...newAnnouncement, priority: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      >
-                        {priorities.map((priority) => (
-                          <option key={priority} value={priority}>
-                            {priority}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-2">
-                    <Button onClick={handleCreateAnnouncement} className="bg-green-700 hover:bg-green-800">
-                      <Send className="w-4 h-4 mr-2" />
-                      Publish Announcement
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsCreating(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Announcements List */}
-            <div className="space-y-4">
-              {announcements.map((announcement) => (
-                <Card key={announcement.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <Badge className={getCategoryColor(announcement.category)}>{announcement.category}</Badge>
-                          <Badge className={getPriorityColor(announcement.priority)}>
-                            {announcement.priority} priority
-                          </Badge>
-                          <Badge variant="outline" className="bg-green-100 text-green-800">
-                            {announcement.status}
-                          </Badge>
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{announcement.title}</h3>
-                        <p className="text-gray-600 mb-2 line-clamp-2">{announcement.content}</p>
-                        <p className="text-sm text-gray-500">
-                          By {announcement.author} • {announcement.date}
-                        </p>
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                        <Button size="sm" variant="outline" className="flex-1 lg:flex-none">
-                          <Eye className="w-4 h-4 mr-2" />
-                          Preview
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1 lg:flex-none">
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDeleteAnnouncement(announcement.id)}
-                          className="text-red-600 hover:text-red-700 flex-1 lg:flex-none"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="events" className="space-y-6">
-            {/* Create Event Form */}
-            {isCreating && activeTab === "events" && (
-              <Card className="border-blue-200 bg-blue-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center">
-                      <Calendar className="w-5 h-5 mr-2 text-blue-600" />
-                      Create New Event
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={() => setIsCreating(false)}>
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="eventTitle">Event Title</Label>
-                    <Input
-                      id="eventTitle"
-                      value={newEvent.title}
-                      onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                      placeholder="Enter event title"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="eventDescription">Description</Label>
-                    <Textarea
-                      id="eventDescription"
-                      rows={3}
-                      value={newEvent.description}
-                      onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                      placeholder="Enter event description"
-                    />
-                  </div>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="eventDate">Date</Label>
-                      <Input
-                        id="eventDate"
-                        type="date"
-                        value={newEvent.date}
-                        onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="eventTime">Time</Label>
-                      <Input
-                        id="eventTime"
-                        type="time"
-                        value={newEvent.time}
-                        onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="eventCategory">Category</Label>
-                      <select
-                        value={newEvent.category}
-                        onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      >
-                        <option value="">Select category</option>
-                        {categories.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="eventLocation">Location</Label>
-                    <Input
-                      id="eventLocation"
-                      value={newEvent.location}
-                      onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                      placeholder="Enter event location"
-                    />
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-2">
-                    <Button onClick={handleCreateEvent} className="bg-blue-700 hover:bg-blue-800">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Create Event
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsCreating(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Events List */}
-            <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
-              {events.map((event) => (
-                <Card key={event.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1 min-w-0">
-                        <Badge className={getCategoryColor(event.category)} variant="secondary">
-                          {event.category}
-                        </Badge>
-                        <h3 className="text-lg font-semibold text-gray-900 mt-2 mb-2">{event.title}</h3>
-                        <p className="text-gray-600 mb-3">{event.description}</p>
-                        <div className="space-y-1 text-sm text-gray-600">
-                          <p>
-                            📅 {event.date} at {event.time}
-                          </p>
-                          <p>📍 {event.location}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteEvent(event.id)}
-                        className="text-red-600 hover:text-red-700 flex-1"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
+      {/* Announcement List */}
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Announcements</h2>
+        <Table>
+          <TableCaption>A list of your recent announcements.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Title</TableHead>
+              <TableHead>Author</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Priority</TableHead>
+              <TableHead>Pinned</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {announcements.map((announcement) => (
+              <TableRow key={announcement.title}>
+                <TableCell className="font-medium">{announcement.title}</TableCell>
+                <TableCell>{announcement.author}</TableCell>
+                <TableCell>{announcement.category}</TableCell>
+                <TableCell>{announcement.priority}</TableCell>
+                <TableCell>{announcement.pinned ? "Yes" : "No"}</TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setEditingAnnouncement(announcement)
+                      setOpenEditModal(true)
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="sm" onClick={() => setAnnouncementToDelete(announcement)}>
                         Delete
                       </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              <Card>
-                <CardContent className="p-4 md:p-6 text-center">
-                  <Megaphone className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">{announcements.length}</div>
-                  <div className="text-sm text-gray-600">Total Announcements</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 md:p-6 text-center">
-                  <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">{events.length}</div>
-                  <div className="text-sm text-gray-600">Total Events</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 md:p-6 text-center">
-                  <Eye className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">1,250</div>
-                  <div className="text-sm text-gray-600">Total Views</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 md:p-6 text-center">
-                  <FileText className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">89%</div>
-                  <div className="text-sm text-gray-600">Engagement Rate</div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. Are you sure you want to delete {announcement.title}?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setAnnouncementToDelete(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAnnouncement}>Continue</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
+
+      {/* Edit Announcement Modal */}
+      <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
+        <DialogTrigger asChild>
+          <Button variant="outline">Edit Announcement</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit announcement</DialogTitle>
+            <DialogDescription>Make changes to your announcement here. Click save when you're done.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <FormLabel htmlFor="title">Title</FormLabel>
+              <Input
+                id="title"
+                value={editingAnnouncement.title}
+                onChange={(e) => setEditingAnnouncement({ ...editingAnnouncement, title: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <FormLabel htmlFor="author">Author</FormLabel>
+              <Input
+                id="author"
+                value={editingAnnouncement.author}
+                onChange={(e) => setEditingAnnouncement({ ...editingAnnouncement, author: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <FormLabel htmlFor="category">Category</FormLabel>
+              <Input
+                id="category"
+                value={editingAnnouncement.category}
+                onChange={(e) => setEditingAnnouncement({ ...editingAnnouncement, category: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <FormLabel htmlFor="content">Content</FormLabel>
+              <Textarea
+                id="content"
+                value={editingAnnouncement.content}
+                onChange={(e) => setEditingAnnouncement({ ...editingAnnouncement, content: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <ImageUpload
+                currentImage={editingAnnouncement.image}
+                onImageChange={(imageUrl) => setEditingAnnouncement({ ...editingAnnouncement, image: imageUrl })}
+                label="Announcement Image (Optional)"
+                aspectRatio="landscape"
+                className="mt-4"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <FormLabel htmlFor="priority">Priority</FormLabel>
+              <Select
+                onValueChange={(value) =>
+                  setEditingAnnouncement({ ...editingAnnouncement, priority: value as "high" | "medium" | "low" })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder={editingAnnouncement.priority} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center">
+              <Switch
+                id="pinned"
+                checked={editingAnnouncement.pinned}
+                onCheckedChange={(checked) => setEditingAnnouncement({ ...editingAnnouncement, pinned: checked })}
+              />
+              <label
+                htmlFor="pinned"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2"
+              >
+                Pinned
+              </label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" onClick={handleEditAnnouncement}>
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Announcement Modal */}
+      <AlertDialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your announcement and remove your data from our
+              servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpenDeleteModal(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAnnouncement}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
+
+export { ContentManagement }

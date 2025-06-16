@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 interface User {
   id: number
@@ -17,6 +18,7 @@ interface User {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     // Check for stored user session
@@ -35,6 +37,8 @@ export function useAuth() {
   const logout = () => {
     setUser(null)
     localStorage.removeItem("ndejje_user")
+    // Navigate to login page after logout
+    router.push("/login")
   }
 
   const hasPermission = (permission: string): boolean => {
